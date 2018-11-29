@@ -1,47 +1,29 @@
-# import threading
-# import serial
-# import time
-# connected = False
-# port = 'COM4'
-# baud = 9600
-
-# # serial_port = serial.Serial(port, baud, timeout=0)
-
-# def loop():
-#     while(True):
-#         print('wait')
-#         time.sleep(1)
-
-# def w():
-#     while(True):
-#         print('holi')
-#         if not t1.isAlive():
-#             break
-#         time.sleep(0.5)
-
-# # def handle_data(data):
-# #     print(data)
-
-# # def read_from_port(ser):
-# #     while not connected:
-# #         #serin = ser.read()
-# #         connected = True
-
-# #         while True:
-# #            print("test")
-# #            reading = ser.readline().decode()
-# #            handle_data(reading)
-
-# # thread = threading.Thread(target=read_from_port, args=(serial_port,))
-# # #thread.start()
-# t1 = threading.Thread(target=loop)
-# t1.start()
-# t2 = threading.Thread(target=w)
-# t2.start()
-
-
 import serial
 import time # Optional (if using time.sleep() below)
+
+# Dictionary representing the morse code chart 
+MORSE_CODE_DICT = { 'A':'.-', 'B':'-...', 
+                    'C':'-.-.', 'D':'-..', 'E':'.', 
+                    'F':'..-.', 'G':'--.', 'H':'....', 
+                    'I':'..', 'J':'.---', 'K':'-.-', 
+                    'L':'.-..', 'M':'--', 'N':'-.', 
+                    'O':'---', 'P':'.--.', 'Q':'--.-', 
+                    'R':'.-.', 'S':'...', 'T':'-', 
+                    'U':'..-', 'V':'...-', 'W':'.--', 
+                    'X':'-..-', 'Y':'-.--', 'Z':'--..', 
+                    '1':'.----', '2':'..---', '3':'...--', 
+                    '4':'....-', '5':'.....', '6':'-....', 
+                    '7':'--...', '8':'---..', '9':'----.', 
+                    '0':'-----', ', ':'--..--', '.':'.-.-.-', 
+                    '?':'..--..', '/':'-..-.', '-':'-....-', 
+                    '(':'-.--.', ')':'-.--.-'} 
+
+MORSE_INV = {v: k for k, v in MORSE_CODE_DICT.iteritems()}
+def morseToText(arr):
+    result = ''
+    for item in arr:
+        result += MORSE_INV[item]
+    print(result)
 
 port = '/dev/ttyUSB0' #READLINE  
 baud = 9600
@@ -51,6 +33,8 @@ cnt = 0
 space = 0
 res = []
 temp = []
+tempStr = ''
+
 """
 si cnt > 3 es "linea"
 
@@ -69,21 +53,22 @@ while (True):
         time.sleep(0.2) 
 
     else:
-        print('decoding MORSE', cnt, space)
+        #print('decoding MORSE', cnt, space)
         if(cnt >= 3 and space < 10):
-            temp.append('--')
+            tempStr += '-'
             space = 0
         elif( cnt < 3 and cnt > 0 and space < 10 ):
-            temp.append('.')
+            tempStr += '.'
             space = 0
         elif(space > 10):
-            if(len(temp)):
-                res.append(temp)
-                temp = []
+            if(len(tempStr)):
+                res.append(tempStr)
+                tempStr = ''
                 space = 0
 
         cnt = 0
         space +=1
 
-        print(res)
+        #print(res)
+        morseToText(res)
         time.sleep(0.1) 
