@@ -1,6 +1,6 @@
 import serial
 import time # Optional (if using time.sleep() below)
-
+import os
 # Dictionary representing the morse code chart 
 MORSE_CODE_DICT = { 'A':'.-', 'B':'-...', 
                     'C':'-.-.', 'D':'-..', 'E':'.', 
@@ -19,21 +19,31 @@ MORSE_CODE_DICT = { 'A':'.-', 'B':'-...',
                     '(':'-.--.', ')':'-.--.-'} 
 
 MORSE_INV = {v: k for k, v in MORSE_CODE_DICT.iteritems()}
-def morseToText(arr):
-    result = ''
-    for item in arr:
-        result += MORSE_INV[item]
-    print(result)
-
-port = '/dev/ttyUSB0' #READLINE  
-baud = 9600
-serial_port = serial.Serial(port, baud, timeout=3)
 
 cnt = 0
 space = 0
 res = []
 temp = []
 tempStr = ''
+loop = 1
+
+def morseToText(arr):
+    os.system('clear')
+    global loop
+    result = ''
+    for item in arr:
+        try:
+            result += MORSE_INV[item]
+        except:
+            loop = 0
+            print('char invalid - end')
+            return
+    print(result)
+
+port = '/dev/ttyUSB0' #READLINE  
+baud = 9600
+serial_port = serial.Serial(port, baud, timeout=3)
+
 
 """
 si cnt > 3 es "linea"
@@ -43,7 +53,7 @@ si cnt < 3 es "punto"
 si space > 10 es fin de cadena
 
 """
-while (True):
+while (loop ):
     if (serial_port.inWaiting()>0): 
         #print('wait',serial_port.inWaiting())  
         data_str = serial_port.read(1) 
@@ -71,4 +81,7 @@ while (True):
 
         #print(res)
         morseToText(res)
-        time.sleep(0.1) 
+        time.sleep(0.1)
+
+        if(space>60):
+            break
